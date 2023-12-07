@@ -39,10 +39,14 @@ class preprocess_dataset():
     #using bm25, return top_doc_index
     def get_negative_passage_bm25(self, question_row, question_column):
         tokenized_question = self.tokenizer(self.questions[question_row][question_column])['input_ids']
-        top_doc = self.bm25.get_top_n(tokenized_question, self.contexts, n=100)
+        top_doc = self.bm25.get_top_n(tokenized_question, self.contexts, n=10)
         top_doc_idx = [self.contexts.index(doc) for doc in top_doc]
-        if question_row in top_doc_idx:
-            return top_doc_idx[0]
+
+        if question_row in top_doc_idx and len(top_doc_idx) >= 10:
+            random_index = random.randint(3, 9)
+            return top_doc_idx[random_index]
+        elif len(top_doc_idx) > 1:
+            return top_doc_idx[1]
         else:
             return -1
 
@@ -86,9 +90,8 @@ class preprocess_dataset():
 train_dataset_process = preprocess_dataset('ko_nia_clue0529_squad_all.json', tokenizer)
 eval_dataset_process = preprocess_dataset('ko_nia_normal_squad_all.json', tokenizer)
 
-train_dataset = train_dataset_process.make_dataset(65000)
-eval_dataset = eval_dataset_process.make_dataset(8500)
+train_dataset = train_dataset_process.make_dataset(1000)
+eval_dataset = eval_dataset_process.make_dataset(500)
 
 train_dataset.save_to_disk('squad_hub_nia_clue')
 eval_dataset.save_to_disk('squad_hub_nia_normal')
-
