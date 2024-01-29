@@ -5,7 +5,7 @@ from kobert_tokenizer import KoBERTTokenizer
 
 
 class HuggingFaceEmbedding:
-    def __init__(self, model_name: str = "klue/bert-base", use_gpu: bool = True):
+    def __init__(self, model_name: str = "skt/kobert-base-v1", use_gpu: bool = True):
         self.device = torch.device(
             "cuda" if torch.cuda.is_available() and use_gpu else "cpu"
         )
@@ -46,8 +46,8 @@ class DPRTextEmbedding(HuggingFaceEmbedding):
     def __init__(
         self,
         mode: Literal["passage", "question"],
-        model_path: str = "./data/kmrc_mrc.pth",
-        model_name: str = "klue/bert-base",
+        model_path: str = "model/museum.pth",
+        model_name: str = "skt/kobert-base-v1",
     ):
         if mode not in ["passage", "question"]:
             raise ValueError("Mode must be 'passage' or 'question'")

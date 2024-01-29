@@ -1,13 +1,12 @@
-from typing import Optional
 import os
 import dotenv
+
+from typing import Optional
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain.callbacks import get_openai_callback
 
-
 dotenv.load_dotenv()
-
 
 class LangChain:
     def __init__(self, api_token=None, instruction=None, callbacks=None, verbose=False):
@@ -25,7 +24,7 @@ class LangChain:
             streaming=self.streaming,
             callbacks=self.callbacks,
         )
-        self.system_message = f"{self.instruction}\n 주어지는 참고용 문서를 바탕으로 사용자의 질문에 답변해줘. 사용자의 질문을 자세히 분석해서 문서를 참고해 질문의 답변을 해줘\n 만약 문서에서 질문에 대한 답변을 찾을 수 없으면 반드시 '참고할 수 있는 문서가 없습니다.' 라고 말하고, 이후에 너가 아는 정보를 말해줘"
+        self.system_message = f"{self.instruction}\n 유저의 질문이 들어오면 주어지는 참고용 문서들을 바탕으로 문맥에 맞게 해석해서 답변해줘. \n 만약 해당 문서에서 질문에 대한 답변을 찾을 수 없으면 반드시 '참고할 수 있는 문서가 없습니다.'라고 말해야 해. 그 후에 네가 기존에 아는 정보를 간략히 말해줘."
         self.history_memory = []
         self.initial_history_memory = [SystemMessage(content=self.system_message)]
 
@@ -47,7 +46,7 @@ class LangChain:
                 + self.history_memory
                 + [
                     HumanMessage(
-                        content=f"질문:\n{prompt}\n\n ### 참고용 문서(질문과 관련 없으면 절대 참고하지 않기):\n{document}\n"
+                        content=f"질문:\n{prompt}\n\n ### 참고용 문서:\n{document}"
                     )
                 ]
             )

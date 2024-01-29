@@ -1,13 +1,15 @@
+from .customdataset import CustomDataset, EvalCustomDataset
+from .doc import ToyDoc
+from .bm25 import CustomBM25
+
 from typing import Optional, Literal
 from docarray import DocList
 from vectordb import InMemoryExactNNVectorDB
-from .customdataset import CustomDataset, EvalCustomDataset
 from tqdm.auto import tqdm
-from .doc import ToyDoc
 from torch.utils.data import DataLoader
+
 import pandas as pd
 import numpy as np
-from .bm25 import CustomBM25
 
 
 class Llmvdb:
@@ -151,7 +153,7 @@ class Llmvdb:
         self.embedding = new_embedding
 
     def evaluate_model(self, target_model):
-        dataset = EvalCustomDataset("data/test.jsonl")
+        dataset = EvalCustomDataset("module/data/test.jsonl")
         dataloader = DataLoader(
             dataset, batch_size=32, shuffle=False, collate_fn=self.custom_collate_fn
         )

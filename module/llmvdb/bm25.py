@@ -1,21 +1,22 @@
 import os
 
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from rank_bm25 import BM25Okapi
-import numpy as np
-from llmvdb.customdataset import CustomDataset, EvalCustomDataset
-import pandas as pd
 from transformers import AutoTokenizer
 from typing import Literal
 
-bert_tokenizer = AutoTokenizer.from_pretrained("klue/bert-base")
+import numpy as np
+import pandas as pd
 
+from llmvdb.customdataset import CustomDataset, EvalCustomDataset
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+bert_tokenizer = AutoTokenizer.from_pretrained("klue/bert-base")
 
 def tokenizer_space(doc):
     if isinstance(doc, list):
         return doc
     sw = set()
-    with open("data/stopwords-ko.txt", encoding="utf-8") as f:
+    with open("module/data/stopwords-ko.txt", encoding="utf-8") as f:
         for word in f:
             sw.add(word.strip())
     return [word for word in doc.split() if word not in sw and len(word) > 1]
@@ -31,7 +32,7 @@ def tokenizer_bert(doc):
 class CustomBM25(BM25Okapi):
     def __init__(
         self,
-        corpus=CustomDataset("data/train.jsonl").get_all_data(),
+        corpus=CustomDataset("module/data/train.jsonl").get_all_data(),
         tokenizer: Literal["bert", "space"] = "space",
     ):
         if tokenizer == "bert":
@@ -39,7 +40,7 @@ class CustomBM25(BM25Okapi):
         elif tokenizer == "space":
             self.tokenizer = tokenizer_space
         else:
-            raise ValueError("tokenizer is 'space' or 'bert'")
+            raise ValueError("tokenizer argument must be 'space' or 'bert.'")
         self.corpus = corpus  # corpus 속성 추가
         super().__init__(
             [self.tokenizer(doc["text"]) for doc in corpus], self.tokenizer
